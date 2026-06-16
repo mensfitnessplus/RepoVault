@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>RepoVault</title>
+  
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#151515" id="meta-theme-color">
+  <link rel="stylesheet" href="css/styles.css">
+  
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+</head>
+<body>
+
+  <header>
+    <div class="header-top">
+      <h1>RepoVault</h1>
+      <button id="btn-settings" aria-label="Settings">⚙️</button>
+    </div>
+    <div class="search-container">
+      <input type="text" id="search-input" placeholder="Search bookmarks...">
+    </div>
+    <div id="filter-container" class="filter-container">
+      </div>
+    <div class="stats-bar">
+      <span id="stat-total">0 items</span>
+      <span id="stat-pinned">0 pinned</span>
+      <select id="sort-select" aria-label="Sort bookmarks">
+        <option value="custom">Custom Order</option>
+        <option value="alpha">A-Z</option>
+        <option value="recent">Recent</option>
+        <option value="frequent">Most Opened</option>
+      </select>
+    </div>
+  </header>
+
+  <main>
+    <div id="empty-state" class="hidden">
+      <p>No bookmarks found.</p>
+      <p>Add your first repository or bookmark!</p>
+    </div>
+    <div id="bookmark-grid" class="grid">
+      </div>
+  </main>
+
+  <button id="fab-add" class="fab" aria-label="Add Bookmark">+</button>
+
+  <div id="modal-bookmark" class="modal hidden">
+    <div class="modal-content">
+      <h2 id="modal-title">Add Bookmark</h2>
+      <form id="form-bookmark">
+        <input type="hidden" id="bm-id">
+        <div class="form-group">
+          <label for="bm-url">URL *</label>
+          <input type="url" id="bm-url" required placeholder="https://github.com/user/repo">
+        </div>
+        <div class="form-group">
+          <label for="bm-name">Name (Optional)</label>
+          <input type="text" id="bm-name" placeholder="Leave empty to auto-fill">
+        </div>
+        <div class="form-group">
+          <label for="bm-tags">Tags (comma separated)</label>
+          <input type="text" id="bm-tags" placeholder="frontend, react, api">
+        </div>
+        <div class="form-group">
+          <label for="bm-notes">Notes</label>
+          <textarea id="bm-notes" rows="2" placeholder="What is this for?"></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" data-close="modal-bookmark">Cancel</button>
+          <button type="submit" class="btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="modal-settings" class="modal hidden">
+    <div class="modal-content">
+      <h2>Settings</h2>
+      <div class="settings-group">
+        <label>Theme</label>
+        <button id="btn-theme-toggle" class="btn-secondary">Switch Theme</button>
+      </div>
+      <div class="settings-group">
+        <label>Data Management</label>
+        <button id="btn-export" class="btn-secondary">Export Backup</button>
+        <button id="btn-import-trigger" class="btn-secondary">Import Backup</button>
+        <input type="file" id="input-import" accept=".json" class="hidden">
+        <button id="btn-clear-data" class="btn-danger">Clear All Data</button>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn-cancel" data-close="modal-settings">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="action-sheet" class="action-sheet hidden">
+    <div class="action-sheet-content">
+      <div class="action-handle"></div>
+      <h3 id="as-title" class="as-title">Bookmark Options</h3>
+      <button id="as-open">🔗 Open</button>
+      <button id="as-edit">✏️ Edit</button>
+      <button id="as-pin">📌 Pin/Unpin</button>
+      <button id="as-duplicate">📑 Duplicate</button>
+      <button id="as-delete" class="danger">🗑️ Delete</button>
+    </div>
+  </div>
+  <div id="action-sheet-overlay" class="overlay hidden"></div>
+
+  <script src="js/utils.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/favicon.js"></script>
+  <script src="js/importexport.js"></script>
+  <script src="js/tags.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/dragdrop.js"></script>
+  <script src="js/modal.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/pwa.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
