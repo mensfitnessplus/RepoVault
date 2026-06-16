@@ -59,6 +59,14 @@
           <label for="bm-name">Name (Optional)</label>
           <input type="text" id="bm-name" placeholder="Leave empty to auto-fill">
         </div>
+        
+        <div class="form-group">
+          <label>Custom Icon (Optional)</label>
+          <input type="url" id="bm-icon-url" placeholder="Paste image URL...">
+          <div class="divider-text">OR UPLOAD</div>
+          <input type="file" id="bm-icon-file" accept="image/*">
+        </div>
+
         <div class="form-group">
           <label for="bm-tags">Tags (comma separated)</label>
           <input type="text" id="bm-tags" placeholder="frontend, react, api">
@@ -101,7 +109,7 @@
       <h3 id="as-title" class="as-title">Bookmark Options</h3>
       <button id="as-open">🔗 Open</button>
       <button id="as-edit">✏️ Edit</button>
-      <button id="as-pin">📌 Pin/Unpin</button>
+      <button id="as-change-icon">🖼️ Change Icon</button> <button id="as-pin">📌 Pin/Unpin</button>
       <button id="as-duplicate">📑 Duplicate</button>
       <button id="as-delete" class="danger">🗑️ Delete</button>
     </div>
