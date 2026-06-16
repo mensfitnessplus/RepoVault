@@ -31,6 +31,14 @@ window.Modals = {
       Modals.closeActionSheet();
       Modals.openEdit(Modals.activeBookmarkId);
     });
+    
+    // NEW: Open edit modal and focus icon input
+    document.getElementById('as-change-icon').addEventListener('click', () => {
+      Modals.closeActionSheet();
+      Modals.openEdit(Modals.activeBookmarkId);
+      document.getElementById('bm-icon-url').focus();
+    });
+
     document.getElementById('as-pin').addEventListener('click', () => {
       const b = State.getById(Modals.activeBookmarkId);
       b.pinned = !b.pinned;
@@ -60,6 +68,8 @@ window.Modals = {
     document.getElementById('modal-title').textContent = 'Add Bookmark';
     document.getElementById('form-bookmark').reset();
     document.getElementById('bm-id').value = '';
+    document.getElementById('bm-icon-url').value = '';
+    document.getElementById('bm-icon-file').value = '';
     document.getElementById('modal-bookmark').classList.remove('hidden');
   },
 
@@ -70,31 +80,59 @@ window.Modals = {
     document.getElementById('bm-id').value = b.id;
     document.getElementById('bm-url').value = b.url;
     document.getElementById('bm-name').value = b.name;
+    document.getElementById('bm-icon-url').value = ''; // Left blank to prevent breaking base64 edits
+    document.getElementById('bm-icon-file').value = '';
     document.getElementById('bm-tags').value = b.tags.join(', ');
     document.getElementById('bm-notes').value = b.notes;
     document.getElementById('modal-bookmark').classList.remove('hidden');
   },
 
-  handleSave: (e) => {
+  handleSave: async (e) => {
     e.preventDefault();
     const id = document.getElementById('bm-id').value;
     const url = document.getElementById('bm-url').value;
     const name = document.getElementById('bm-name').value || Utils.extractDomain(url);
     const tags = Utils.parseTags(document.getElementById('bm-tags').value);
     const notes = document.getElementById('bm-notes').value;
+    
+    // Icon overrides
+    const iconUrlInput = document.getElementById('bm-icon-url').value;
+    const iconFileInput = document.getElementById('bm-icon-file').files[0];
+    
+    let finalIcon = '';
+    
+    if (iconFileInput) {
+      finalIcon = await Modals.fileToBase64(iconFileInput);
+    } else if (iconUrlInput) {
+      finalIcon = iconUrlInput;
+    }
 
     if (id) {
       // Edit
       const b = State.getById(id);
-      b.url = url; b.name = name; b.tags = tags; b.notes = notes;
+      b.url = url; 
+      b.name = name; 
+      b.tags = tags; 
+      b.notes = notes;
       b.updatedAt = Date.now();
-      b.icon = Favicon.getIconUrl(url); // refresh icon just in case
+      
+      // If a custom icon was provided, update it. 
+      // If not, but the URL changed, fetch the new automatic icon.
+      if (finalIcon) {
+        b.icon = finalIcon;
+      } else if (b.url !== url) {
+        b.icon = Favicon.getIconUrl(url);
+      }
     } else {
       // Add
+      if (!finalIcon) {
+        finalIcon = Favicon.getIconUrl(url);
+      }
+      
       State.bookmarks.push({
         id: Utils.generateId(),
         url, name, tags, notes,
-        icon: Favicon.getIconUrl(url),
+        icon: finalIcon,
         pinned: false,
         clickCount: 0,
         createdAt: Date.now(),
@@ -106,6 +144,15 @@ window.Modals = {
     State.save();
     UI.render();
     document.getElementById('modal-bookmark').classList.add('hidden');
+  },
+
+  fileToBase64: (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    });
   },
 
   openActionSheet: (id) => {
